@@ -8,10 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/stories")
@@ -20,6 +22,9 @@ public class StoryController {
 
     @Autowired
     private StoryRepository storyRepository;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @GetMapping
     public ResponseEntity<Object> all() {
@@ -44,6 +49,26 @@ public class StoryController {
 
     @PostMapping("/create")
     public ResponseEntity<Object> create(@Valid @RequestBody Story story) {
+
+        if(story.getDogs().isEmpty()) {
+            return new ResponseEntity<>("Can not create a story without a dog",HttpStatus.CREATED);
+        }
+
+        ResponseEntity error = null;
+
+        for (String d : story.getDogs()) {
+            ResponseEntity<String> dog = restTemplate.getForEntity(String.format("http://dog-service/dogs/name/%s", d), String.class);
+
+            if (dog.getBody().equals("null") || dog.getStatusCode() != HttpStatus.OK) {
+                error = new ResponseEntity<>(String.format("Dog with name %s couldn't be found in our system", d), dog.getStatusCode());
+                break;
+            }
+        }
+
+        if (error != null) {
+            return new ResponseEntity<>(error.getBody(), HttpStatus.NOT_FOUND);
+        }
+
         Story created = storyRepository.save(story);
         return new ResponseEntity<>(created,HttpStatus.CREATED);
     }
