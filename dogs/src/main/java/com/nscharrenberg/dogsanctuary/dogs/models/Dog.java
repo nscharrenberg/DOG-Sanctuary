@@ -21,7 +21,7 @@ public class Dog {
     private long id;
 
     @NotBlank(message = "Name is required")
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String profile;
