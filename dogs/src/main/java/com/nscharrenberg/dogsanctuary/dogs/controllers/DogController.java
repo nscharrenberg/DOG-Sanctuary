@@ -45,12 +45,15 @@ public class DogController {
 
     @GetMapping("/name/{name}")
     public ResponseEntity<Object> findByName(@PathVariable final String name) {
+        LOGGER.info(String.format("Search a dog with the name of %s", name));
         Optional<Dog> dog = dogRepository.findByName(name);
 
         if(!dog.isPresent()) {
+            LOGGER.info(String.format("Dog with the name of %s could not be found in our system", name));
             return new ResponseEntity<>(String.format("Dog with name %s could not be found", name), HttpStatus.NOT_FOUND);
         }
 
+        LOGGER.info(String.format("Dog with the name of %s has been found", name));
         return new ResponseEntity<>(dog, HttpStatus.OK);
     }
 
