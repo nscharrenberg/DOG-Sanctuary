@@ -30,12 +30,13 @@ public class Story {
     private String content;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private LocalDateTime happened_at;
+    @Column(nullable = false, name = "happened_at")
+    private LocalDateTime happenedAt;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @Column(nullable = false)
-    private LocalDateTime created_at;
+    @Column(nullable = false, name = "created_at")
+    private LocalDateTime createdAt;
 
     @ElementCollection
     private List<String> dogs;

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface StoryRepository extends JpaRepository<Story, Long> {
-    List<Story> findAllByDogsIn(String name);
+    List<Story> findAllByDogsInOrderByHappenedAtDescCreatedAtDesc(String name);
 }

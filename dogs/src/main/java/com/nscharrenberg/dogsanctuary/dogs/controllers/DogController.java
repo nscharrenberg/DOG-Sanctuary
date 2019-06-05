@@ -25,19 +25,31 @@ public class DogController {
     public ResponseEntity<Object> all() {
         List<Dog> dogs = dogRepository.findAll();
 
+        if(!dogs.isEmpty()) {
+            return new ResponseEntity<>("No dogs found", HttpStatus.NOT_FOUND);
+        }
+
         return new ResponseEntity<>(dogs, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> all(@PathVariable final long id) {
+    public ResponseEntity<Object> findById(@PathVariable final long id) {
         Optional<Dog> dog = dogRepository.findById(id);
+
+        if(!dog.isPresent()) {
+            return new ResponseEntity<>(String.format("Dog with id %s could not be found", id), HttpStatus.NOT_FOUND);
+        }
 
         return new ResponseEntity<>(dog, HttpStatus.OK);
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<Object> all(@PathVariable final String name) {
+    public ResponseEntity<Object> findByName(@PathVariable final String name) {
         Optional<Dog> dog = dogRepository.findByName(name);
+
+        if(!dog.isPresent()) {
+            return new ResponseEntity<>(String.format("Dog with name %s could not be found", name), HttpStatus.NOT_FOUND);
+        }
 
         return new ResponseEntity<>(dog, HttpStatus.OK);
     }
